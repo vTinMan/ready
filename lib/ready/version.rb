@@ -1,0 +1,3 @@
+module Ready
+  VERSION = ''
+end
