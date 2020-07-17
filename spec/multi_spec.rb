@@ -6,53 +6,92 @@ require "ready"
 RSpec.describe "Multi" do
 
 
-  let(:cb_class) do
+  let(:calc_class) do
 
-    module MdC
+    module CalcDependency
+
       extend Ready::Dependency
 
-      dependency { UtilC.new }
+      dependency { CalcUtil.new }
 
-      provide :calc
     end
 
 
-    class UtilC
+    class CalcUtil
+
+      def initialize
+        @a ||= 0
+      end
 
       def calc
-        @a ||= 0
         @a += 1
       end
 
     end
 
 
-    class ClC
+    module CalcDependency2
 
-      include MdC
-      injection :current, alias: :util_b
+      extend Ready::Dependency
 
-      def test_mt
-        calc
+      dependency { CalcUtil2.new }
+
+    end
+
+
+    class CalcUtil2
+
+      def initialize
+        @a ||= 0
+      end
+
+      def calc
+        @a += 2
       end
 
     end
 
 
-    ClC
+    class MainCalc
+
+      include CalcDependency
+      ready :calc1
+
+      include CalcDependency2
+      ready :calc2
+
+      def test
+        calc1.calc
+      end
+
+      def test2
+        calc2.calc
+      end
+    end
+
+
+    MainCalc
   end
 
-  let(:cb_obj1) { cb_class.new }
-  let(:cb_obj2) { cb_class.new }
+  let(:calc_obj1) { calc_class.new }
+  let(:calc_obj2) { calc_class.new }
 
   it "cb test" do
-    expect(cb_obj1.test_mt).to eql(1)
-    expect(cb_obj1.test_mt).to eql(2)
-    expect(cb_obj1.test_mt).to eql(3)
+    expect(calc_obj1.test).to eql(1)
+    expect(calc_obj1.test).to eql(2)
+    expect(calc_obj1.test).to eql(3)
 
-    expect(cb_obj2.test_mt).to eql(1)
-    expect(cb_obj2.test_mt).to eql(2)
-    expect(cb_obj2.test_mt).to eql(3)
+    expect(calc_obj1.test2).to eql(2)
+    expect(calc_obj1.test2).to eql(4)
+    expect(calc_obj1.test2).to eql(6)
+
+    expect(calc_obj2.test).to eql(1)
+    expect(calc_obj2.test).to eql(2)
+    expect(calc_obj2.test).to eql(3)
+
+    expect(calc_obj2.test2).to eql(2)
+    expect(calc_obj2.test2).to eql(4)
+    expect(calc_obj2.test2).to eql(6)
   end
 
 end

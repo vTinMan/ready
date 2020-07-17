@@ -5,33 +5,27 @@ module Ready
 
     private
 
-    def injection(_modl, options={})
-      if _modl == :current
-        modl = ancestors.detect {|ancestor| ancestor.is_a?(Module) && ancestor.is_a?(Ready::Dependency) }
-        method_name = options[:current]
-      elsif
-        modl = _modl
+    def ready(method_name)
+      unless method_name.is_a?(String) || method_name.is_a?(Symbol)
+        raise ArgumentError, "method_name should be String or Symbol"
       end
-      unless defined?(modl) && modl
-        # TODO arguments error
-        raise ArgumentError, "arguments should be ......."
+      modl = ancestors.detect {|ancestor| ancestor.is_a?(Module) && ancestor.is_a?(Ready::Dependency) }
+      unless modl
+        raise StandardError, "ready allow only when included dependency module"
       end
 
-      if options[:alias]
-        method_name = options[:alias]
-        class_eval <<-RUBY
-          def #{method_name}
-            tg = @ready_objects[#{modl.name}] if @ready_objects
-            tg ||= #{modl.name}.ready_inject(self)
-            if tg != #{name}
-              @ready_objects ||= {}
-              @ready_objects[tg] ||= tg
-            end
-            tg
+      class_eval <<-RUBY
+        def #{method_name}
+          tg = @ready_objects[#{modl.name}] if @ready_objects
+          tg ||= #{modl.name}.ready_inject(self)
+          if tg != #{modl.name}
+            @ready_objects ||= {}
+            @ready_objects[#{modl.name}] ||= tg
           end
-          private :#{method_name}
-        RUBY
-      end
+          tg
+        end
+        private :#{method_name}
+      RUBY
     end
 
   end

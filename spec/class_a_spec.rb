@@ -3,54 +3,59 @@ require "ready"
 
 
 
-RSpec.describe "A" do
+RSpec.describe "B" do
 
 
-  let(:ca_obj) do
+  let(:main_obj) do
 
-    module MdA
+    class DependentClass
+
+      def u_mth
+        DependencyModule::MY_STRING.split(DependencyModule::SPLITTER)[0]
+      end
+
+      def u2
+        DependencyModule::MY_STRING.split(DependencyModule::SPLITTER)[1]
+      end
+
+      def uu_mmtthh
+        DependencyModule::MY_STRING.split(DependencyModule::SPLITTER)[2]
+      end
+
+    end
+
+
+    module DependencyModule
+      MY_STRING = "first text; second text; other text"
+      SPLITTER = "; "
+
       extend Ready::Dependency
-      provide :my_method
-      provide :mt2, :mmtthh
+
+      dependency DependentClass
+
     end
 
 
-    class << MdA
-      def my_method
-        'text from my_method'
-      end
+    class MainClass
 
-      def mt2
-        'text from mt2'
-      end
-
-      def mmtthh
-        'text from mmtthh'
-      end
-    end
-
-
-    class ClA
-      include MdA
+      include DependencyModule
+      ready :my_dependency
 
       def prob_mt
-        puts my_method
-        puts mt2
-        puts mmtthh
+        [my_dependency.u_mth, my_dependency.u2, my_dependency.uu_mmtthh].join("; ")
       end
+
     end
 
-    ClA.new
+
+    MainClass.new
   end
 
 
 
-  it "ClA test" do
-    ca_obj.prob_mt
-    expect { ca_obj.my_method }.to raise_error(NoMethodError, /private/)
-    expect { ca_obj.mt2 }.to raise_error(NoMethodError, /private/)
-    expect { ca_obj.mmtthh }.to raise_error(NoMethodError, /private/)
+  it "cb test" do
+    expect(main_obj.prob_mt).to eq(DependencyModule::MY_STRING)
+    expect { main_obj.my_dependency }.to raise_error(NoMethodError, /private/)
   end
-
 
 end
