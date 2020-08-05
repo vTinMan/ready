@@ -3,6 +3,9 @@ module Ready
 
   module Dependency
 
+    include Ready::ModulePrivacy
+
+
     def ready_inject(obj)
       return self unless @inject_target
       @inject_target.is_a?(Proc) ? @inject_target.call(obj) : @inject_target.new
