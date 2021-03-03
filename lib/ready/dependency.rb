@@ -23,7 +23,7 @@ module Ready
 
 
     def dependency(*args, &block)
-      # TODO addition arguments
+      # TODO add arguments
       @inject_target = block_given? ? block.to_proc : args[0]
     end
 

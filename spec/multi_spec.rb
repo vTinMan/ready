@@ -2,23 +2,16 @@ require "rspec"
 require "ready"
 
 
-
 RSpec.describe "Multi" do
 
-
   let(:calc_class) do
-
     module CalcDependency
-
       extend Ready::Dependency
-
       dependency { CalcUtil.new }
-
     end
 
 
     class CalcUtil
-
       def initialize
         @a ||= 0
       end
@@ -26,21 +19,16 @@ RSpec.describe "Multi" do
       def calc
         @a += 1
       end
-
     end
 
 
     module CalcDependency2
-
       extend Ready::Dependency
-
       dependency { CalcUtil2.new }
-
     end
 
 
     class CalcUtil2
-
       def initialize
         @a ||= 0
       end
@@ -48,12 +36,10 @@ RSpec.describe "Multi" do
       def calc
         @a += 2
       end
-
     end
 
 
     class MainCalc
-
       include CalcDependency
       ready :calc1
 
@@ -68,7 +54,6 @@ RSpec.describe "Multi" do
         calc2.calc
       end
     end
-
 
     MainCalc
   end
@@ -93,5 +78,4 @@ RSpec.describe "Multi" do
     expect(calc_obj2.test2).to eql(4)
     expect(calc_obj2.test2).to eql(6)
   end
-
 end

@@ -2,14 +2,10 @@ require "rspec"
 require "ready"
 
 
-
 RSpec.describe "B" do
 
-
   let(:main_obj) do
-
     class DependentClass
-
       def u_mth
         DependencyModule::MY_STRING.split(DependencyModule::SPLITTER)[0]
       end
@@ -21,7 +17,6 @@ RSpec.describe "B" do
       def uu_mmtthh
         DependencyModule::MY_STRING.split(DependencyModule::SPLITTER)[2]
       end
-
     end
 
 
@@ -30,27 +25,20 @@ RSpec.describe "B" do
       SPLITTER = "; "
 
       extend Ready::Dependency
-
       dependency DependentClass
-
     end
 
-
     class MainClass
-
       include DependencyModule
       ready :my_dependency
 
       def prob_mt
         [my_dependency.u_mth, my_dependency.u2, my_dependency.uu_mmtthh].join("; ")
       end
-
     end
-
 
     MainClass.new
   end
-
 
 
   it "cb test" do

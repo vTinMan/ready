@@ -9,24 +9,25 @@ RSpec.describe "B" do
   let(:main_obj) do
 
 
-    module MethodsModule
-      CONST_0 = "text from #mth0"
+    module PrivateMethodsModule
+      METHODS_CONST = "text from #mth0"
 
       extend Ready::ModulePrivacy
 
       def mth0
-        CONST_0
+        METHODS_CONST
       end
 
     end
 
 
     class Main2Class
+      MAIN_CONST = 'Main2Class text "%s"'
 
-      include MethodsModule
+      include PrivateMethodsModule
 
       def prob_mt
-        mth0
+        format(MAIN_CONST, mth0)
       end
 
     end
@@ -37,7 +38,7 @@ RSpec.describe "B" do
 
 
   it "cb test" do
-    expect(main_obj.prob_mt).to eq(MethodsModule::CONST_0)
+    expect(main_obj.prob_mt).to eq(Main2Class::MAIN_CONST % [PrivateMethodsModule::METHODS_CONST])
     expect { main_obj.mth0 }.to raise_error(NoMethodError, /private/)
   end
 
